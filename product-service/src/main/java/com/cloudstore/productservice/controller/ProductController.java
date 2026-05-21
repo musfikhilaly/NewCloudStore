@@ -2,8 +2,11 @@ package com.cloudstore.productservice.controller;
 
 import com.cloudstore.productservice.dto.Product;
 import com.cloudstore.productservice.service.ProductService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import com.cloudstore.productservice.dto.ProductWithOrdersDTO;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 /**
  * ProductController - Handles all HTTP requests related to products.
@@ -58,5 +61,20 @@ public class ProductController {
     @GetMapping("/{id}")
     public Product getProductById(@PathVariable Integer id) {
         return productService.getProductById(id);
+    }
+    @GetMapping("/{id}/with-orders")
+    public ResponseEntity<ProductWithOrdersDTO> getProductWithOrders(
+            @PathVariable Integer id,
+            @RequestHeader("Authorization") String authorization) {
+
+        String token = authorization.substring(7);
+
+        ProductWithOrdersDTO result = productService.getProductWithOrders(id, token);
+
+        if (result == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(result);
     }
 }

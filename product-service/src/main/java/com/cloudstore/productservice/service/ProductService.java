@@ -4,6 +4,10 @@ import com.cloudstore.productservice.dto.Product;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import java.util.List;
+import com.cloudstore.productservice.client.UserOrderClient;
+import com.cloudstore.productservice.dto.OrderDTO;
+import com.cloudstore.productservice.dto.ProductWithOrdersDTO;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * ProductService - Contains the business logic for products.
@@ -18,15 +22,13 @@ import java.util.List;
 @Service
 public class ProductService {
 
-    // WebClient is injected here automatically by Spring (from our AppConfig bean)
     private final WebClient fakeStoreWebClient;
+    private final UserOrderClient userOrderClient;
 
-    /**
-     * Constructor injection - Spring automatically finds our fakeStoreWebClient
-     * bean and passes it in here. This is the recommended way to inject dependencies.
-     */
-    public ProductService(WebClient fakeStoreWebClient) {
+    public ProductService(@Qualifier("fakeStoreWebClient") WebClient fakeStoreWebClient,
+                          UserOrderClient userOrderClient) {
         this.fakeStoreWebClient = fakeStoreWebClient;
+        this.userOrderClient = userOrderClient;
     }
 
     /**
@@ -64,4 +66,25 @@ public class ProductService {
                 .bodyToMono(Product.class)      // One Product (not a list)
                 .block();
     }
+    public ProductWithOrdersDTO getProductWithOrders(Integer id, String jwtToken) {
+        Product product = getProductById(id);
+
+        if (product == null) {
+            return null;
+        }
+
+        List<OrderDTO> orders = userOrderClient.getOrdersByProductId(id, jwtToken);
+
+        ProductWithOrdersDTO result = new ProductWithOrdersDTO();
+        result.setId(product.getId());
+        result.setTitle(product.getTitle());
+        result.setPrice(product.getPrice());
+        result.setDescription(product.getDescription());
+        result.setCategory(product.getCategory());
+        result.setImage(product.getImage());
+        result.setOrders(orders);
+
+        return result;
+    }
+
 }
