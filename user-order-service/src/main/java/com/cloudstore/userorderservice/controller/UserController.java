@@ -7,18 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
-/**
- * UserController - Handles all HTTP requests related to users.
- *
- * Endpoints:
- *   GET    /users          → Get all users
- *   GET    /users/{id}     → Get one user by ID
- *   POST   /users/register → Register a new user
- *   DELETE /users/{id}     → Delete a user
- *
- * ResponseEntity lets us control the HTTP status code we send back.
- * For example: 201 Created, 200 OK, 404 Not Found, 400 Bad Request.
- */
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -29,67 +17,41 @@ public class UserController {
         this.userService = userService;
     }
 
-    /**
-     * GET /users
-     * Returns all users as JSON array.
-     */
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userService.getAllUsers();
-        return ResponseEntity.ok(users);    // 200 OK
+        return ResponseEntity.ok(users);
     }
 
-    /**
-     * GET /users/{id}
-     * Returns one user by ID.
-     * Returns 404 Not Found if user doesn't exist.
-     */
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
         User user = userService.getUserById(id);
         if (user == null) {
-            return ResponseEntity.notFound().build();   // 404 Not Found
+            return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(user);     // 200 OK
+        return ResponseEntity.ok(user);
     }
 
-    /**
-     * POST /users/register
-     * Registers a new user.
-     *
-     * The request body must be JSON like:
-     * {
-     *   "name": "Alice Johnson",
-     *   "email": "alice@example.com",
-     *   "password": "password123"
-     * }
-     *
-     * @RequestBody tells Spring to convert the JSON body into a User object.
-     */
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
         try {
-            User savedUser = userService.registerUser(user);
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);  // 201 Created
+            User savedUser = userService.registerUser(
+                    user.getName(),
+                    user.getEmail(),
+                    user.getPassword()
+            );
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());    // 400 Bad Request
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    /**
-     * DELETE /users/{id}
-     * Deletes a user by ID.
-     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
-        return ResponseEntity.noContent().build();  // 204 No Content
+        return ResponseEntity.noContent().build();
     }
 
-    /**
-     * GET /users/health
-     * Simple health check endpoint.
-     */
     @GetMapping("/health")
     public ResponseEntity<String> health() {
         return ResponseEntity.ok("User service is running ✅");
