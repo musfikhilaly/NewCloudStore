@@ -1,14 +1,13 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import Navbar from '../components/Navbar';
+import ProductCard from '../components/ProductCard';
 
 export default function Products() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
-  const { token, user, logout } = useAuth();
-  const navigate = useNavigate();
+  const { token } = useAuth();
 
   useEffect(() => {
     fetchProducts();
@@ -17,14 +16,10 @@ export default function Products() {
   const fetchProducts = async () => {
     try {
       const response = await fetch('http://localhost:8081/products', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+        headers: { 'Authorization': `Bearer ${token}` }
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch products');
-      }
+      if (!response.ok) throw new Error('Failed to fetch products');
 
       const data = await response.json();
       setProducts(data);
@@ -35,127 +30,81 @@ export default function Products() {
     }
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
-
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center',
-        marginBottom: '30px',
-        paddingBottom: '20px',
-        borderBottom: '2px solid #2563eb'
+    <div style={{ minHeight: '100vh', background: '#f7fafc' }}>
+      <Navbar />
+
+      <div style={{
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        color: 'white',
+        padding: '60px 20px',
+        textAlign: 'center'
       }}>
-        <div>
-          <h1 style={{ color: '#2563eb', margin: 0 }}>CloudStore</h1>
-          <p style={{ color: '#666', margin: '5px 0 0 0' }}>Welcome, {user?.name || user?.email}!</p>
-        </div>
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <button
-            onClick={() => navigate('/orders')}
-            style={{
-              padding: '10px 20px',
-              background: 'white',
-              color: '#2563eb',
-              border: '2px solid #2563eb',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontWeight: '500'
-            }}
-          >
-            My Orders
-          </button>
-          <button
-            onClick={handleLogout}
-            style={{
-              padding: '10px 20px',
-              background: '#dc2626',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontWeight: '500'
-            }}
-          >
-            Logout
-          </button>
-        </div>
+        <h1 style={{
+          fontSize: '48px',
+          fontWeight: '700',
+          marginBottom: '16px',
+          textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+        }}>
+          Discover Amazing Products
+        </h1>
+        <p style={{
+          fontSize: '20px',
+          opacity: 0.9,
+          maxWidth: '600px',
+          margin: '0 auto'
+        }}>
+          Shop the latest trends and exclusive deals
+        </p>
       </div>
 
-      <h2 style={{ marginBottom: '20px' }}>Products</h2>
+      <div style={{
+        maxWidth: '1400px',
+        margin: '0 auto',
+        padding: '60px 20px'
+      }}>
+        {loading && (
+          <div style={{ textAlign: 'center', padding: '60px 0' }}>
+            <div style={{
+              width: '50px',
+              height: '50px',
+              border: '4px solid #e2e8f0',
+              borderTop: '4px solid #667eea',
+              borderRadius: '50%',
+              margin: '0 auto',
+              animation: 'spin 1s linear infinite'
+            }}></div>
+            <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+            <p style={{ marginTop: '20px', color: '#718096' }}>Loading products...</p>
+          </div>
+        )}
 
-      {loading && <p>Loading products...</p>}
+        {error && (
+          <div style={{
+            padding: '20px',
+            background: '#fff5f5',
+            color: '#c53030',
+            borderRadius: '12px',
+            textAlign: 'center',
+            maxWidth: '500px',
+            margin: '0 auto'
+          }}>
+            <strong>Error:</strong> {error}
+          </div>
+        )}
 
-      {error && (
-        <div style={{
-          padding: '15px',
-          background: '#fee',
-          color: '#c00',
-          borderRadius: '8px',
-          marginBottom: '20px'
-        }}>
-          Error: {error}
-        </div>
-      )}
-
-      {!loading && !error && (
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
-          gap: '20px'
-        }}>
-          {products.slice(0, 12).map(product => (
-            <div key={product.id} style={{
-              border: '1px solid #e5e7eb',
-              borderRadius: '8px',
-              padding: '15px',
-              background: 'white'
-            }}>
-              <img
-                src={product.image}
-                alt={product.title}
-                style={{
-                  width: '100%',
-                  height: '200px',
-                  objectFit: 'contain',
-                  marginBottom: '10px'
-                }}
-              />
-              <h3 style={{
-                fontSize: '14px',
-                margin: '0 0 10px 0',
-                height: '40px',
-                overflow: 'hidden'
-              }}>
-                {product.title}
-              </h3>
-              <p style={{
-                fontSize: '20px',
-                fontWeight: 'bold',
-                color: '#2563eb',
-                margin: '0'
-              }}>
-                ${product.price}
-              </p>
-              <span style={{
-                display: 'inline-block',
-                marginTop: '10px',
-                padding: '4px 10px',
-                background: '#f3f4f6',
-                color: '#6b7280',
-                fontSize: '12px',
-                borderRadius: '999px'
-              }}>
-                {product.category}
-              </span>
-            </div>
-          ))}
-        </div>
-      )}
+        {!loading && !error && (
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+            gap: '30px'
+          }}>
+            {products.map(product => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

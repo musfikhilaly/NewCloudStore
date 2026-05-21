@@ -1,3 +1,4 @@
+import ProductDetail from './pages/ProductDetail';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Login from './pages/Login';
@@ -21,6 +22,12 @@ function App() {
           <Route path="/products" element={
             <ProtectedRoute>
               <Products />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/products/:id" element={
+            <ProtectedRoute>
+              <ProductDetail />
             </ProtectedRoute>
           } />
           
