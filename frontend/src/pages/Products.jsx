@@ -15,7 +15,7 @@ export default function Products() {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch('http://localhost:8081/products', {
+     const response = await fetch('/api/products', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 

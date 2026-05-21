@@ -18,7 +18,7 @@ export default function ProductDetail() {
 
   const fetchProductWithOrders = async () => {
     try {
-      const response = await fetch(`http://localhost:8081/products/${id}/with-orders`, {
+      const response = await fetch(`/api/products/${id}/with-orders`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
