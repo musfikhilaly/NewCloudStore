@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
  * ProductController - Handles all HTTP requests related to products.
  *
  * This controller exposes two endpoints:
- *   GET /products      → Returns all products
+ *   GET /products→ Returns all products
  *   GET /products/{id} → Returns one product by ID
  *
  * @RestController = @Controller + @ResponseBody
