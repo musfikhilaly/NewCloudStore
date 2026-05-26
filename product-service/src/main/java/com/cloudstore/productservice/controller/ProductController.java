@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
  * @RequestMapping("/products") sets the base URL for all methods in this class.
  */
 @RestController
-@RequestMapping("/products")
+@RequestMapping("/api/products")
 public class ProductController {
 
     // The ProductService is injected by Spring automatically

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { API_URL } from '../config';
 
 export default function Orders() {
   const [orders, setOrders] = useState([]);
@@ -16,7 +17,7 @@ export default function Orders() {
 
   const fetchOrders = async () => {
     try {
-      const response = await fetch('/api/orders', {
+      const response = await fetch(`${API_URL}/api/orders`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

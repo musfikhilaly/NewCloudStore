@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { PRODUCT_SERVICE_URL } from '../config';
 import Navbar from '../components/Navbar';
 
 export default function ProductDetail() {
@@ -18,7 +19,7 @@ export default function ProductDetail() {
 
   const fetchProductWithOrders = async () => {
     try {
-      const response = await fetch(`/api/products/${id}/with-orders`, {
+      const response = await fetch(`${PRODUCT_SERVICE_URL}/api/products/${id}/with-orders`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
