@@ -14,4 +14,4 @@ RUN ./mvnw clean package
 
 EXPOSE 8081
 
-CMD ["java", "-jar", "target/product-service-0.0.1-SNAPSHOT.jar"]
+CMD ["java", "-Xms64m", "-Xmx200m", "-jar", "target/product-service-0.0.1-SNAPSHOT.jar"]
