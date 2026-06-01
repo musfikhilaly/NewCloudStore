@@ -19,7 +19,7 @@ import java.util.Map;
  *   PUT  /orders/{id}/status  → Update order status
  */
 @RestController
-@RequestMapping("/orders")
+@RequestMapping("/api/orders")
 public class OrderController {
 
     private final OrderService orderService;

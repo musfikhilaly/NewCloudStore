@@ -105,6 +105,18 @@ export default function Products() {
             ))}
           </div>
         )}
+
+          {/* Footer */}
+          <footer style={{
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              color: 'white',
+              padding: '40px 20px',
+              textAlign: 'center'
+          }}>
+              <h3 style={{ fontSize: '24px', fontWeight: '700', marginBottom: '8px' }}>CloudStore</h3>
+              <p style={{ opacity: 0.8, marginBottom: '16px' }}>Your one-stop shop for amazing products</p>
+              <p style={{ opacity: 0.6, fontSize: '14px' }}>© 2026 CloudStore. All rights reserved.</p>
+          </footer>
       </div>
     </div>
   );
