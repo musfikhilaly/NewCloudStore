@@ -1,4 +1,5 @@
 name: CloudStore CI Pipeline
+
 on:
   push:
     branches: [ main, master ]
@@ -113,4 +114,7 @@ jobs:
           sudo docker stop product-service || true
           sudo docker rm product-service || true
           sudo docker run -d --restart always --name product-service -p 8080:8081 \
+            -e SPRING_DATASOURCE_URL=${{ secrets.DB_URL }} \
+            -e SPRING_DATASOURCE_USERNAME=${{ secrets.DB_USERNAME }} \
+            -e SPRING_DATASOURCE_PASSWORD=${{ secrets.DB_PASSWORD }} \
             musfikhilaly/cloudstore-product-service:latest
