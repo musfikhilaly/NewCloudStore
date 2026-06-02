@@ -8,7 +8,7 @@ export default function Orders() {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const { token } = useAuth();
+    const { token, user } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -63,29 +63,16 @@ export default function Orders() {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                         {orders.map(order => (
                             <div key={order.id} style={{ border: '1px solid #e2e8f0', borderRadius: '12px', padding: '24px', background: 'white', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <div>
-                                        <strong style={{ fontSize: '18px', color: '#2d3748' }}>Order #{order.id}</strong>
-                                        <p style={{ margin: '8px 0 4px', color: '#718096' }}>Product ID: {order.productId}</p>
-                                        <p style={{ margin: '0', color: '#718096' }}>Quantity: {order.quantity}</p>
-                                    </div>
-                                    <div style={{ textAlign: 'right' }}>
-                    <span style={{
-                        display: 'inline-block',
-                        padding: '8px 20px',
-                        background: order.status === 'pending' ? '#fef3c7' : order.status === 'shipped' ? '#dbeafe' : '#d1fae5',
-                        color: order.status === 'pending' ? '#92400e' : order.status === 'shipped' ? '#1e40af' : '#065f46',
-                        borderRadius: '20px',
-                        fontSize: '14px',
-                        fontWeight: '600',
-                        textTransform: 'capitalize'
-                    }}>
-                      {order.status}
-                    </span>
-                                        <p style={{ margin: '8px 0 0', color: '#718096', fontSize: '14px' }}>
-                                            {new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-                                        </p>
-                                    </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                    <strong style={{ fontSize: '18px', color: '#2d3748' }}>
+                                        Thank you for your order, {user?.email}!
+                                    </strong>
+                                    <p style={{ margin: '0', color: '#718096', fontSize: '14px' }}>Order #{order.id}</p>
+                                    <p style={{ margin: '0', color: '#718096', fontSize: '14px' }}>Product ID: {order.productId}</p>
+                                    <p style={{ margin: '0', color: '#718096', fontSize: '14px' }}>Quantity: {order.quantity}</p>
+                                    <p style={{ margin: '0', color: '#718096', fontSize: '13px' }}>
+                                        {new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                                    </p>
                                 </div>
                             </div>
                         ))}
@@ -93,7 +80,6 @@ export default function Orders() {
                 )}
             </div>
 
-            {/* Footer */}
             <footer style={{
                 background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                 color: 'white',
