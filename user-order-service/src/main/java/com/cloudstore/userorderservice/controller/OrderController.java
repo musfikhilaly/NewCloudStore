@@ -1,100 +1,64 @@
 package com.cloudstore.userorderservice.controller;
 
 import com.cloudstore.userorderservice.model.Order;
+import com.cloudstore.userorderservice.model.User;
+import com.cloudstore.userorderservice.repository.UserRepository;
 import com.cloudstore.userorderservice.service.OrderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
-/**
- * OrderController - Handles all HTTP requests related to orders.
- *
- * Endpoints:
- *   GET  /orders              → Get all orders
- *   GET  /orders/{id}         → Get one order by ID
- *   GET  /orders/user/{userId}→ Get all orders for a user
- *   POST /orders              → Create a new order
- *   PUT  /orders/{id}/status  → Update order status
- */
 @RestController
 @RequestMapping("/api/orders")
 public class OrderController {
 
     private final OrderService orderService;
+    private final UserRepository userRepository;
 
-    public OrderController(OrderService orderService) {
+    public OrderController(OrderService orderService, UserRepository userRepository) {
         this.orderService = orderService;
+        this.userRepository = userRepository;
     }
 
-    /**
-     * GET /orders
-     * Returns all orders as JSON array.
-     */
     @GetMapping
-    public ResponseEntity<List<Order>> getAllOrders() {
-        return ResponseEntity.ok(orderService.getAllOrders());
+    public ResponseEntity<List<Order>> getAllOrders(@AuthenticationPrincipal String email) {
+        User user = userRepository.findByEmail(email).orElseThrow();
+        return ResponseEntity.ok(orderService.getOrdersByUserId(user.getId()));
     }
 
-    /**
-     * GET /orders/{id}
-     * Returns one order by ID.
-     */
     @GetMapping("/{id}")
     public ResponseEntity<Order> getOrderById(@PathVariable Long id) {
         Order order = orderService.getOrderById(id);
         if (order == null) {
-            return ResponseEntity.notFound().build();   // 404
+            return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(order);
     }
 
-    /**
-     * GET /orders/user/{userId}
-     * Returns all orders belonging to a specific user.
-     */
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<Order>> getOrdersByUser(@PathVariable Long userId) {
         return ResponseEntity.ok(orderService.getOrdersByUserId(userId));
     }
 
-    /**
-     * POST /orders
-     * Creates a new order.
-     *
-     * Request body JSON:
-     * {
-     *   "userId": 1,
-     *   "productId": 5,
-     *   "quantity": 2
-     * }
-     *
-     * Map<String, Object> lets us receive any JSON object.
-     */
     @PostMapping
-    public ResponseEntity<?> createOrder(@RequestBody Map<String, Object> body) {
+    public ResponseEntity<?> createOrder(
+            @RequestBody Map<String, Object> body,
+            @AuthenticationPrincipal String email) {
         try {
-            Long userId = Long.valueOf(body.get("userId").toString());
+            User user = userRepository.findByEmail(email).orElseThrow();
             Integer productId = Integer.valueOf(body.get("productId").toString());
             Integer quantity = Integer.valueOf(body.get("quantity").toString());
 
-            Order order = orderService.createOrder(userId, productId, quantity);
-            return ResponseEntity.status(HttpStatus.CREATED).body(order);   // 201 Created
+            Order order = orderService.createOrder(user.getId(), productId, quantity);
+            return ResponseEntity.status(HttpStatus.CREATED).body(order);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    /**
-     * PUT /orders/{id}/status
-     * Updates the status of an order.
-     *
-     * Request body JSON:
-     * {
-     *   "status": "shipped"
-     * }
-     */
     @PutMapping("/{id}/status")
     public ResponseEntity<?> updateOrderStatus(
             @PathVariable Long id,
